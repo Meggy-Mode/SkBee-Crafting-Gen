@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Skript Item Generator</title>
+  <style>
+    .item-block {
+      border: 1px solid #aaa;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 70px);
+      gap: 5px;
+      margin-top: 5px;
+    }
+
+    .attribute-block {
+      margin-top: 5px;
+      padding-left: 10px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 160px;
+      margin-bottom: 3px;
+    }
+
+    .attribute-list {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Skript Item Generator</h2>
+
+  <label>List Variable (for attributes):</label><br>
+  <input type="text" id="varRoot" value=""><br><br>
+
+  <div id="itemsContainer"></div>
+  <button onclick="addItem()">➕ Add New Item</button><br><br>
+  <button onclick="generateAll()">📥 Download Skript File</button><br><br>
+
+  <h3>Custom Items</h3>
+  <button onclick="addCustomItem()">➕ Add Custom Item</button><br><br>
+
+  <div id="customItemsContainer"></div>
+
+  <script>
+    let itemCount = 0;
+    let customItemCount = 0;
+
+    // Add standard items
+    function addItem() {
+      itemCount++;
+      const block = document.createElement("div");
+      block.className = "item-block";
+      block.id = `itemBlock${itemCount}`;
+
+      block.innerHTML = `
+        <strong>Item #${itemCount}</strong><br>
+        Slot (list variable name): <input type="text" id="slot${itemCount}" value=""><br>
+        Name (for item): <input type="text" id="name${itemCount}" value=""><br>
+        Add Color? <input type="checkbox" id="color${itemCount}" checked><br><br>
+        Item (e.g. dirt block): <input type="text" id="itemType${itemCount}" value=""><br>
+        Recipe ID (Highly recommended): <input type="text" id="recipeId${itemCount}" value=""><br><br>
+
+        <strong>Attributes:</strong>
+        <div class="attribute-list" id="attrList${itemCount}"></div>
+        <button onclick="addAttribute(${itemCount})">➕ Add Attribute</button><br><br>
+
+        <strong>Recipe Grid:</strong>
+        <div class="grid" id="grid${itemCount}"></div>
+      `;
+
+      document.getElementById("itemsContainer").appendChild(block);
+
+      const grid = document.getElementById(`grid${itemCount}`);
+      for (let i = 1; i <= 9; i++) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.id = `item${itemCount}_${i}`;
+        input.placeholder = `item${i}`;
+        grid.appendChild(input);
+      }
+    }
+
+    // Add custom item
+    function addCustomItem() {
+      customItemCount++;
+      const block = document.createElement("div");
+      block.className = "item-block";
+      block.id = `customItemBlock${customItemCount}`;
+
+      block.innerHTML = `
+        <strong>Custom Ingredient #${customItemCount}</strong><br>
+        Custom Ingredient Variable: <input type="text" id="customItemVar${customItemCount}" value="custom_item_${customItemCount}"><br><br>
+        Ingredient Type (e.g. diamond): <input type="text" id="customItemType${customItemCount}" value="diamond"><br><br>
+        Ingredient Name: <input type="text" id="customItemName${customItemCount}" value="&bCustom Ingredient"><br><br>
+        Ingredient Lore: <input type="text" id="customItemLore${customItemCount}" value="&7Custom Ingredient Lore"><br><br>
+
+        <strong>Recipe Grid:</strong>
+        <div class="grid" id="customItemGrid${customItemCount}"></div><br><br>
+      `;
+
+      document.getElementById("customItemsContainer").appendChild(block);
+
+      const grid = document.getElementById(`customItemGrid${customItemCount}`);
+      for (let i = 1; i <= 9; i++) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.id = `customItem${customItemCount}_${i}`;
+        input.placeholder = `item${i}`;
+        grid.appendChild(input);
+      }
+    }
+
+    // Add attribute for item
+    function addAttribute(id) {
+      const container = document.getElementById(`attrList${id}`);
+      const attrId = Date.now();
+      const attr = document.createElement("div");
+      attr.className = "attribute-block";
+      attr.id = `attr${id}_${attrId}`;
+      attr.innerHTML = `
+        Type: <input type="text" id="attrType${id}_${attrId}" placeholder="armor"><br>
+        Amount: <input type="number" id="attrAmount${id}_${attrId}"><br>
+        Operation: 
+          <select id="attrOp${id}_${attrId}">
+            <option value="add_number">add_number</option>
+            <option value="multiply_base">multiply_base</option>
+            <option value="multiply_total">multiply_total</option>
+          </select><br>
+        Slot: <input type="text" id="attrSlot${id}_${attrId}" value="armor_slot_group"><br>
+        ID: <input type="text" id="attrID${id}_${attrId}" value="minecraft:custom_${attrId}"><br>
+        <button onclick="this.parentElement.remove()">❌ Remove Attribute</button>
+        <hr>
+      `;
+      container.appendChild(attr);
+    }
+
+    // Generate Skript File
+    function generateAll() {
+      const varRoot = document.getElementById("varRoot").value.trim();
+      let skript = `on load:\n`;
+
+      // Handle custom items
+      for (let i = 1; i <= customItemCount; i++) {
+        const customItemVar = document.getElementById(`customItemVar${i}`).value.trim();
+        const customItemType = document.getElementById(`customItemType${i}`).value.trim();
+        const customItemName = document.getElementById(`customItemName${i}`).value.trim();
+        const customItemLore = document.getElementById(`customItemLore${i}`).value.trim();
+
+        skript += `    set {${customItemVar}} to ${customItemType} named "${customItemName}" with lore "${customItemLore}"\n\n`;
+
+        // Recipe generation for custom items
+        let items = [];
+        for (let j = 1; j <= 9; j++) {
+          let val = document.getElementById(`customItem${i}_${j}`).value.trim();
+          if (val === "") val = "air";
+          items.push(val);
+        }
+
+        const recipe = `    register new shaped recipe for ${customItemType} named "${customItemName}" using ${items.slice(0, 8).join(", ")}, and ${items[8]} with id "c_${customItemVar}"`;
+        skript += `\n${recipe}\n\n`;
+      }
+
+      // Handle main items
+      for (let i = 1; i <= itemCount; i++) {
+        const slot = document.getElementById(`slot${i}`).value.trim();
+        const name = document.getElementById(`name${i}`).value.trim();
+        const itemType = document.getElementById(`itemType${i}`).value.trim();
+        const recipeId = document.getElementById(`recipeId${i}`).value.trim();
+        const varPath = `{${varRoot}::${slot}}`;
+
+        skript += `    set ${varPath} to ${itemType} named "${name}"\n\n`;
+        skript += `    loop {${varRoot}::*}:\n`;
+
+        // Attributes generation
+        const attrContainer = document.getElementById(`attrList${i}`);
+        const attrBlocks = attrContainer.querySelectorAll(".attribute-block");
+        attrBlocks.forEach(attr => {
+          const aid = attr.id.split("_")[1];
+          const type = document.getElementById(`attrType${i}_${aid}`).value.trim();
+          const amount = document.getElementById(`attrAmount${i}_${aid}`).value.trim();
+          const op = document.getElementById(`attrOp${i}_${aid}`).value;
+          const slotAttr = document.getElementById(`attrSlot${i}_${aid}`).value.trim();
+          const idAttr = document.getElementById(`attrID${i}_${aid}`).value.trim();
+
+          skript += `        apply attribute modifier to loop-value:\n`;
+          skript += `            attribute: ${type}\n`;
+          skript += `            id: "${idAttr}"\n`;
+          skript += `            slot: ${slotAttr}\n`;
+          skript += `            amount: ${amount}\n`;
+          skript += `            operation: ${op}\n`;
+        });
+
+        // Recipe generation
+        let items = [];
+        for (let j = 1; j <= 9; j++) {
+          let val = document.getElementById(`item${i}_${j}`).value.trim();
+          if (val === "") val = "air";
+          items.push(val);
+        }
+
+        const recipe = `    register new shaped recipe for ${itemType} named "${name}" using ${items.slice(0, 8).join(", ")}, and ${items[8]} with id "${recipeId}"`;
+        skript += `\n${recipe}\n\n`;
+      }
+
+      const blob = new Blob([skript], {type: "text/plain"});
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${varRoot}-items.sk`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    window.onload = () => addItem();
+  </script>
+</body>
+
+</html>
