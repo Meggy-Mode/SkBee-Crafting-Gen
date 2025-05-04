@@ -10,17 +10,18 @@
 <body>
   <h2>Skript Item Generator</h2>
   <a href="SkBee3.6.html">SkBee 3.6</a> <a href="SkBee3.11.html" name="selected"><b>SkBee 3.11+</b></a>
+  <button onclick="generateAll()">📥 Download Skript File</button><br>
   <label>List Variable (root variable):</label><br>
   <input type="text" id="varRoot" value=""><br><br>
   <h3>Main Items</h3>
+  <button onclick="addItem()">➕ Add New Item</button><br><br>
+
   <div id="itemsContainer"></div>
   
   <h3>Secondary Items</h3>
   <button onclick="addCustomItem()">➕ Add Custom Item</button><br><br>
   <div id="customItemsContainer"></div>
   
-  <button onclick="addItem()">➕ Add New Item</button><br><br>
-  <button onclick="generateAll()">📥 Download Skript File</button><br><br>
 
   <script>
     let itemCount = 0;
