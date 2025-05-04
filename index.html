@@ -39,7 +39,7 @@
 <body>
   <h2>Skript Item Generator</h2>
 
-  <label>List Variable (for attributes):</label><br>
+  <label>List Variable (root variable):</label><br>
   <input type="text" id="varRoot" value=""><br><br>
 
   <div id="itemsContainer"></div>
@@ -121,28 +121,49 @@
     }
 
     // Add attribute for item
-    function addAttribute(id) {
-      const container = document.getElementById(`attrList${id}`);
-      const attrId = Date.now();
-      const attr = document.createElement("div");
-      attr.className = "attribute-block";
-      attr.id = `attr${id}_${attrId}`;
-      attr.innerHTML = `
-        Type: <input type="text" id="attrType${id}_${attrId}" placeholder="armor"><br>
-        Amount: <input type="number" id="attrAmount${id}_${attrId}"><br>
-        Operation: 
-          <select id="attrOp${id}_${attrId}">
-            <option value="add_number">add_number</option>
-            <option value="multiply_base">multiply_base</option>
-            <option value="multiply_total">multiply_total</option>
-          </select><br>
-        Slot: <input type="text" id="attrSlot${id}_${attrId}" value="armor_slot_group"><br>
-        ID: <input type="text" id="attrID${id}_${attrId}" value="minecraft:custom_${attrId}"><br>
-        <button onclick="this.parentElement.remove()">❌ Remove Attribute</button>
-        <hr>
-      `;
-      container.appendChild(attr);
-    }
+function addAttribute(id) {
+  const container = document.getElementById(`attrList${id}`);
+  const attrId = Date.now();
+  const attr = document.createElement("div");
+  attr.className = "attribute-block";
+  attr.id = `attr${id}_${attrId}`;
+  attr.innerHTML = `
+    Type:
+    <select id="attrType${id}_${attrId}">
+      <option value="generic.max_health">generic.max_health</option>
+      <option value="generic.follow_range">generic.follow_range</option>
+      <option value="generic.knockback_resistance">generic.knockback_resistance</option>
+      <option value="generic.movement_speed">generic.movement_speed</option>
+      <option value="generic.attack_damage">generic.attack_damage</option>
+      <option value="generic.attack_speed">generic.attack_speed</option>
+      <option value="generic.armor">generic.armor</option>
+      <option value="generic.armor_toughness">generic.armor_toughness</option>
+      <option value="generic.luck">generic.luck</option>
+      <option value="generic.jump_strength">generic.jump_strength</option>
+      <option value="generic.attack_knockback">generic.attack_knockback</option>
+      <option value="generic.flying_speed">generic.flying_speed</option>
+      <option value="generic.max_absorption">generic.max_absorption</option>
+      <option value="generic.scale">generic.scale</option>
+      <option value="generic.step_height">generic.step_height</option>
+      <option value="generic.block_interaction_range">generic.block_interaction_range</option>
+      <option value="generic.entity_interaction_range">generic.entity_interaction_range</option>
+      <option value="horse.jump_strength">horse.jump_strength</option>
+      <option value="zombie.spawn_reinforcements">zombie.spawn_reinforcements</option>
+    </select><br>
+    Amount: <input type="number" id="attrAmount${id}_${attrId}"><br>
+    Operation: 
+      <select id="attrOp${id}_${attrId}">
+        <option value="add_number">add_number</option>
+        <option value="multiply_base">multiply_base</option>
+        <option value="multiply_total">multiply_total</option>
+      </select><br>
+    Slot: <input type="text" id="attrSlot${id}_${attrId}" value="armor_slot_group"><br>
+    ID: <input type="text" id="attrID${id}_${attrId}" value="minecraft:custom_${attrId}"><br>
+    <button onclick="this.parentElement.remove()">❌ Remove Attribute</button>
+    <hr>
+  `;
+  container.appendChild(attr);
+}
 
     // Generate Skript File
     function generateAll() {
