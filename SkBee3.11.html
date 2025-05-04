@@ -36,7 +36,8 @@
         <strong>Item #${itemCount}</strong><br>
         Slot (list variable name): <input type="text" id="slot${itemCount}" value=""><br>
         Name (for item): <input type="text" id="name${itemCount}" value=""><br>
-        Add Color? <input type="checkbox" id="color${itemCount}" checked><br><br>
+        Color <input type="checkbox" id="color${itemCount}" checked><br><br>
+        Glint <input type="checkbox" id="glint${itemCount}"><br><br>
         Item (e.g. dirt block): <input type="text" id="itemType${itemCount}" value=""><br>
         Recipe ID (Highly recommended): <input type="text" id="recipeId${itemCount}" value=""><br><br>
 
@@ -73,7 +74,7 @@
         Ingredient Type (e.g. diamond): <input type="text" id="customItemType${customItemCount}" value="diamond"><br><br>
         Ingredient Name: <input type="text" id="customItemName${customItemCount}" value="&bCustom Ingredient"><br><br>
         Ingredient Lore: <input type="text" id="customItemLore${customItemCount}" value="&7Custom Ingredient Lore"><br><br>
-
+        Glint <input type="checkbox" id="cutomItemGlint${itemCount}"><br><br>
         <strong>Recipe Grid:</strong>
         <div class="grid" id="customItemGrid${customItemCount}"></div><br><br>
       `;
@@ -147,7 +148,9 @@ function addAttribute(id) {
         const customItemName = document.getElementById(`customItemName${i}`).value.trim();
         const customItemLore = document.getElementById(`customItemLore${i}`).value.trim();
 
-        skript += `    set {${customItemVar}} to ${customItemType} named "${customItemName}" with lore "${customItemLore}"\n\n`;
+        const cGlint = document.getElementById('customItemGlint${i}`).checked;
+        const cGlintNBT = cGlint ? ' with nbt "{Enchantments:[{id:\\"minecraft:unbreaking\\",lvl:1s}]}"' : "";
+        skript += `    set {${customItemVar}} to ${customItemType} named "${customItemName}" with lore "${customItemLore}"${glintNBT}\n\n`;
 
         // Recipe generation for custom items
         let items = [];
@@ -157,7 +160,7 @@ function addAttribute(id) {
           items.push(val);
         }
 
-        const recipe = `    register new shaped recipe for ${customItemType} named "${customItemName}" using ${items.slice(0, 8).join(", ")}, and ${items[8]} with id "c_${customItemVar}"`;
+        const recipe = `    register new shaped recipe "c_${customItemVar}" for ${customItemType}\n        named "${customItemName}"\n        using ${items.join(", ")}`;
         skript += `\n${recipe}\n\n`;
       }
 
@@ -199,8 +202,10 @@ function addAttribute(id) {
           items.push(val);
         }
 
-        const recipe = `    register new shaped recipe for ${itemType} named "${name}" using ${items.slice(0, 8).join(", ")}, and ${items[8]} with id "${recipeId}"`;
-        skript += `\n${recipe}\n\n`;
+        const recipe = `    register new shaped recipe "${recipeId}" for ${itemType}\n        named "${name}"\n        using ${items.join(", ")}`;
+        const glint = document.getElementById(`glint${i}`).checked;
+        const glintNBT = glint ? ' with nbt "{Enchantments:[{id:\\"minecraft:unbreaking\\",lvl:1s}]}"' : "";
+        skript += `    set ${varPath} to ${itemType} named "${name}"${glintNBT}\n\n`;
       }
 
       const blob = new Blob([skript], {type: "text/plain"});
