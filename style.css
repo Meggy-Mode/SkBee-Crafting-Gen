@@ -27,7 +27,13 @@
       margin-top: 10px;
       margin-bottom: 10px;
     }
-    .selected {
-      color: blue;
-      font-size: medium;
-    }
+.selected {
+    color: blue;
+    font-size: medium;
+}
+a:visited {
+    color: black;
+}
+a:link {
+    color: black;
+}
