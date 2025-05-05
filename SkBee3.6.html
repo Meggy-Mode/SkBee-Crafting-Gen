@@ -169,8 +169,7 @@ function addAttribute(id) {
         const recipeId = document.getElementById(`recipeId${i}`).value.trim();
         const varPath = `{${varRoot}::${slot}}`;
 
-        skript += `    set ${varPath} to ${itemType} named "${name}"\n\n`;
-        skript += `    loop {${varRoot}::*}:\n`;
+        skript += `    set ${varPath} to ${itemType} named "${name}"\n`;
 
         // Attributes generation
         const attrContainer = document.getElementById(`attrList${i}`);
@@ -183,12 +182,12 @@ function addAttribute(id) {
           const slotAttr = document.getElementById(`attrSlot${i}_${aid}`).value.trim();
           const idAttr = document.getElementById(`attrID${i}_${aid}`).value.trim();
 
-          skript += `        apply attribute modifier to loop-value:\n`;
-          skript += `            attribute: ${type}\n`;
-          skript += `            id: "${idAttr}"\n`;
-          skript += `            slot: ${slotAttr}\n`;
-          skript += `            amount: ${amount}\n`;
-          skript += `            operation: ${op}\n`;
+          skript += `    apply attribute modifier to ${varPath}:\n`;
+          skript += `        attribute: ${type}\n`;
+          skript += `        id: "${idAttr}"\n`;
+          skript += `        slot: ${slotAttr}\n`;
+          skript += `        amount: ${amount}\n`;
+          skript += `        operation: ${op}\n`;
         });
 
         // Recipe generation
